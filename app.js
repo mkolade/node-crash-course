@@ -1,4 +1,5 @@
- //USING EXPRESS APP//
+
+//USING EXPRESS APP//
 const express = require('express');
 
 //USING MORGAN MIDDLEWARE
@@ -7,21 +8,40 @@ const morgan = require('morgan')
 //USING MONGOOSE
 const mongoose = require('mongoose');
 const { result } = require('lodash');
+const Blog = require('./models/blog');
 
 //Instance of express app
 const app = express()
 
 //Mongodb connection
-const dbUrl = 'mongodb+srv://moshoodmohammed:managermuhkid@cluster1.e4kvies.mongodb.net/?retryWrites=true&w=majority'
+const dbUrl = 'mongodb+srv://moshoodmohammed:managermuhkid@cluster1.e4kvies.mongodb.net/node-tuit?retryWrites=true&w=majority'
+/* ye4kvies */
 mongoose.connect(dbUrl)
-.then((result) => app.listen(3000))
+.then((result) => {
+    app.listen(3000)
+    console.log('connected to db')
+})
 .catch((err) => console.log(err))
 
 //mongoose and mongodb sandbox routes
-
+app.get('/blogs/create',(req,res) => {
+    const blog = new Blog({
+        title:'New blog',
+        snippet: 'About my new blog',
+        body:'More about my new blog'
+    })
+    blog.save()
+        .then((result) =>{
+            res.send(result)
+        })
+        .catch((err) =>{
+            console.log(err)
+        })
+})
 
 //Register view engine
 app.set('view engine','ejs')
+
 //to use different folder name as the default is {views}
 //app.set('views','myviews')
 
@@ -42,9 +62,11 @@ app.use((req,res,next) =>{
     console.log('In the next middleware')
     next()
 }) */
+
 //middlewares & static files
 app.use(express.static('public'))
-//Using morgan middleware
+
+//Using morgan middleware:- this is to show details on console
 app.use(morgan('dev'))
 
 //send html file
