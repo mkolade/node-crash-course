@@ -1,0 +1,6 @@
+Mongo db;
+
+password-:managermuhkid
+
+username-: mohammedamoshood
+
