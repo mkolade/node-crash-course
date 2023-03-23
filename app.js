@@ -7,15 +7,14 @@ const morgan = require('morgan')
 
 //USING MONGOOSE
 const mongoose = require('mongoose');
-const { result } = require('lodash');
 const Blog = require('./models/blog');
+const { result } = require('lodash');
 
 //Instance of express app
 const app = express()
 
 //Mongodb connection
 const dbUrl = 'mongodb+srv://moshoodmohammed:managermuhkid@cluster1.e4kvies.mongodb.net/node-tuit?retryWrites=true&w=majority'
-/* ye4kvies */
 mongoose.connect(dbUrl)
 .then((result) => {
     app.listen(3000)
@@ -23,49 +22,15 @@ mongoose.connect(dbUrl)
 })
 .catch((err) => console.log(err))
 
-//mongoose and mongodb sandbox routes
-app.get('/blogs/create',(req,res) => {
-    const blog = new Blog({
-        title:'New blog',
-        snippet: 'About my new blog',
-        body:'More about my new blog'
-    })
-    blog.save()
-        .then((result) =>{
-            res.send(result)
-        })
-        .catch((err) =>{
-            console.log(err)
-        })
-})
+
 
 //Register view engine
 app.set('view engine','ejs')
 
-//to use different folder name as the default is {views}
-//app.set('views','myviews')
-
-
-//To listen for requests
-/* app.listen(3000); */
-
-/* //Using Middleware
-app.use((req,res,next) =>{
-    console.log('new request made')
-    console.log('host:',req.hostname)
-    console.log('path:',req.path)
-    console.log('method:',req.method)
-    next()
-})
-s
-app.use((req,res,next) =>{
-    console.log('In the next middleware')
-    next()
-}) */
 
 //middlewares & static files
 app.use(express.static('public'))
-
+app.use(express.urlencoded({extended:true}))
 //Using morgan middleware:- this is to show details on console
 app.use(morgan('dev'))
 
@@ -73,12 +38,57 @@ app.use(morgan('dev'))
 app.get('/',(req,res) =>{
     //res.send('<p>Home page</p>')
     //res.sendFile('./views/index.html',{root: __dirname})
-    const blogs =[
+   /*  const blogs =[
         {title: 'Yoshi finds eggs',snippet:'Lorem ipsum sit amet consectetur'},
         {title: 'Mario finds Stars',snippet:'Lorem ipsum sit amet consectetur'},
         {title: 'How to defeat browser',snippet:'Lorem ipsum sit amet consectetur'}
     ]
-    res.render('index',{title: 'Home',blogs/* ,blogs: blogs */})
+    res.render('index',{title: 'Home',blogs}) */
+    res.redirect('/blogs')
+})
+
+app.get('/blogs',(req,res) =>{
+    Blog.find().sort({createdAt: -1})
+        .then((result) =>{
+            res.render('index',{title:'All blogs',blogs: result})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+})
+
+app.post('/blogs',(req,res) =>{
+    const blog = new Blog(req.body)
+    blog.save()
+        .then((result) =>{
+            res.redirect('/')
+        })
+        .catch((err) =>{
+            console.log(err)
+        })
+})
+
+app.delete('/blogs/:id',(req,res) =>{
+    const id = req.params.id
+    Blog.findByIdAndDelete(id)
+        .then((result) =>{
+            res.json({redirect:'/blogs'}) 
+        })
+        .catch(err => console.log(err))
+})
+
+app.get('/blogs/:id',(req,res)=>{
+    //to get the id 
+    const id = req.params.id
+    //console.log(id)
+
+    Blog.findById(id)
+        .then((result) =>{
+            res.render('details',{blog:result,title:'Blog Details'})
+        })
+        .catch((err) =>{
+            console.log(err)
+        })
 })
 
 app.get('/about',(req,res) =>{
@@ -87,7 +97,7 @@ app.get('/about',(req,res) =>{
     res.render('about',{title: 'About'})
 })
 
-app.get('/blogs/create',(req,res) => {
+app.get('/create',(req,res) => {
     res.render('create',{title: 'Create a new blog'})
 })
 
