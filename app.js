@@ -1,6 +1,9 @@
 
+//to install package.json
+//npm init -y
 //USING EXPRESS APP//
 const express = require('express');
+
 
 //USING MORGAN MIDDLEWARE
 const morgan = require('morgan')
