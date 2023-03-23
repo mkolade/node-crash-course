@@ -7,11 +7,12 @@ const morgan = require('morgan')
 
 //USING MONGOOSE
 const mongoose = require('mongoose');
-const Blog = require('./models/blog');
 const { result } = require('lodash');
 
 //Instance of express app
 const app = express()
+
+const blogRoutes = require('./Routes/blogRoutes')
 
 //Mongodb connection
 const dbUrl = 'mongodb+srv://moshoodmohammed:managermuhkid@cluster1.e4kvies.mongodb.net/node-tuit?retryWrites=true&w=majority'
@@ -34,6 +35,9 @@ app.use(express.urlencoded({extended:true}))
 //Using morgan middleware:- this is to show details on console
 app.use(morgan('dev'))
 
+//This puts /blogs in front of all the route handler urls in blogRoutes
+app.use('/blogs',blogRoutes)
+
 //send html file
 app.get('/',(req,res) =>{
     //res.send('<p>Home page</p>')
@@ -47,58 +51,10 @@ app.get('/',(req,res) =>{
     res.redirect('/blogs')
 })
 
-app.get('/blogs',(req,res) =>{
-    Blog.find().sort({createdAt: -1})
-        .then((result) =>{
-            res.render('index',{title:'All blogs',blogs: result})
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-})
-
-app.post('/blogs',(req,res) =>{
-    const blog = new Blog(req.body)
-    blog.save()
-        .then((result) =>{
-            res.redirect('/')
-        })
-        .catch((err) =>{
-            console.log(err)
-        })
-})
-
-app.delete('/blogs/:id',(req,res) =>{
-    const id = req.params.id
-    Blog.findByIdAndDelete(id)
-        .then((result) =>{
-            res.json({redirect:'/blogs'}) 
-        })
-        .catch(err => console.log(err))
-})
-
-app.get('/blogs/:id',(req,res)=>{
-    //to get the id 
-    const id = req.params.id
-    //console.log(id)
-
-    Blog.findById(id)
-        .then((result) =>{
-            res.render('details',{blog:result,title:'Blog Details'})
-        })
-        .catch((err) =>{
-            console.log(err)
-        })
-})
-
 app.get('/about',(req,res) =>{
     //res.send('<p>About page</p>')
     //res.sendFile('./views/about.html',{root: __dirname})
     res.render('about',{title: 'About'})
-})
-
-app.get('/create',(req,res) => {
-    res.render('create',{title: 'Create a new blog'})
 })
 
 /* //redirects
