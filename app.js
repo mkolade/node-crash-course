@@ -38,7 +38,7 @@ app.use(express.urlencoded({extended:true}))
 //Using morgan middleware:- this is to show details on console
 app.use(morgan('dev'))
 
-//This puts /blogs in front of all the route handler urls in blogRoutes
+//This puts all the route handler urls with /blogs in front of them in blogRoutes
 app.use('/blogs',blogRoutes)
 
 //send html file
