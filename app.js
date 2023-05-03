@@ -21,7 +21,7 @@ const blogRoutes = require('./Routes/blogRoutes')
 const dbUrl = 'mongodb+srv://moshoodmohammed:managermuhkid@cluster1.e4kvies.mongodb.net/node-tuit?retryWrites=true&w=majority'
 mongoose.connect(dbUrl)
 .then((result) => {
-    app.listen(3000)
+    app.listen(80)
     console.log('connected to db')
 })
 .catch((err) => console.log(err))
