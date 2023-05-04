@@ -41,7 +41,7 @@ const blog_create_post = (req,res) =>{
 }
 
 const blog_delete = (req,res) =>{
-    const id = req.params.id
+    const id = req.params.idtoString();
     Blog.findByIdAndDelete(id)
         .then((result) =>{
             res.json({redirect:'/blogs'}) 
